@@ -24,9 +24,9 @@ jobs:
             "php artisan view:clear","php artisan config:cache","php artisan route:cache"],"wait":1}
           verbose: true
 
-      - name: Check deployment status
-        uses: distributhor/workflow-webhook@v3
-        with:
-          webhook_url: https://my.domcloud.co/api/githubdeploycheck
-          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
-          webhook_auth: ${{ secrets.WEBHOOK_AUTH }}
+      # - name: Check deployment status
+      #   uses: distributhor/workflow-webhook@v3
+      #   with:
+      #     webhook_url: https://my.domcloud.co/api/githubdeploycheck
+      #     webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+      #     webhook_auth: ${{ secrets.WEBHOOK_AUTH }}

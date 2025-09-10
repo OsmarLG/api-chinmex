@@ -11,3 +11,10 @@ Route::get('/test', function () {
         'message' => 'test'
     ]);
 });
+
+Route::get('/test2', function () {
+    return response()->json([
+        'message' => 'quitando el check'
+    ]);
+});
+
