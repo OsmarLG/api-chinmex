@@ -19,7 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            \App\Repositories\Contracts\UserRepositoryInterface::class,
+            \App\Repositories\Eloquent\EloquentUserRepository::class
+        );
     }
 
     /**
@@ -43,11 +46,26 @@ class AppServiceProvider extends ServiceProvider
                 ]);
             })
             ->routes(function (Route $route) {
-                return Str::contains($route->uri(), 'api*');
+                return Str::startsWith($route->uri(), 'api/v1/');
             })
             ->expose(
-                ui: '/docs/api',
-                document: '/docs/openapi.json',
+                ui: '/docs/v1/api',
+                document: '/docs/v1/openapi.json',
+            );
+
+        Scramble::registerApi('v2', [
+            'info' => ['version' => '2.0.0'],
+            'description' => 'API documentation for the Chinmex application',
+            'servers' => [
+                'Live Server' => 'api/v2',
+            ],
+        ])
+            ->routes(function (Route $route) {
+                return Str::startsWith($route->uri(), 'api/v2/');
+            })
+            ->expose(
+                ui: '/docs/v2/api',
+                document: '/docs/v2/openapi.json',
             );
     }
 }

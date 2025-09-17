@@ -105,4 +105,7 @@ return [
 
     'prefix' => env('CACHE_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')).'-cache-'),
 
+    // Default TTL for cache entries, used by repositories. Configurable via .env CACHE_TTL
+    'ttl' => env('CACHE_TTL', 60),
+
 ];
