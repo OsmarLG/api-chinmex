@@ -24,7 +24,7 @@ class CreateUserAction
     {
         $userData = [
             'name' => $data['name'],
-            'username' => $data['username'],
+            'username' => $data['username'] ?? null,
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ];

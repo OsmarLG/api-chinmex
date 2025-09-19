@@ -15,7 +15,7 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'username' => 'required|string|alpha_dash|max:50|unique:users,username',
+            'username' => 'nullable|string|alpha_dash|max:50|unique:users,username',
             'email' => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required|string|min:8',
@@ -26,7 +26,6 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name.required' => 'El nombre es requerido.',
-            'username.required' => 'El nombre de usuario es requerido.',
             'username.alpha_dash' => 'El nombre de usuario solo puede contener letras, números, guiones y guiones bajos.',
             'username.unique' => 'Este nombre de usuario ya está registrado.',
             'email.required' => 'El email es requerido.',

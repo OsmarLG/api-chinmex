@@ -99,17 +99,44 @@ abstract class BaseRepository implements BaseRepositoryInterface
     /**
      * Paginate models using optional filters.
      *
-     * Caches the paginated result using a key that includes per-page and md5 of filters.
+     * Defaults to most recent (created_at DESC). Allows overriding per-page, sort column and order
+     * via method parameters or HTTP query params: per_page, sort, order.
+     *
+     * Caches the paginated result using a key that includes filters, per-page, sort and order.
      */
-    public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator
-    {
-        $filtersHash = md5((string) json_encode($filters));
-        $key = $this->getCacheKey("paginate_{$perPage}_{$filtersHash}");
+    public function paginate(
+        array $filters = [],
+        int $perPage = 15,
+        ?string $sort = null,
+        ?string $order = null
+    ): LengthAwarePaginator {
+        // Resolve options from params or request query
+        $resolvedPerPage = (int) ($perPage ?: (int) request('per_page', 15));
+        $resolvedSort = $sort ?? (string) request('sort', 'created_at');
+        $resolvedOrder = strtolower($order ?? (string) request('order', 'desc'));
 
-        return Cache::remember($key, $this->ttl, function () use ($filters, $perPage) {
+        // Basic sanitization
+        if (!in_array($resolvedOrder, ['asc', 'desc'], true)) {
+            $resolvedOrder = 'desc';
+        }
+        if (!preg_match('/^[a-zA-Z0-9_.]+$/', $resolvedSort)) {
+            $resolvedSort = 'created_at';
+        }
+
+        $cachePayload = [
+            'filters' => $filters,
+            'perPage' => $resolvedPerPage,
+            'sort' => $resolvedSort,
+            'order' => $resolvedOrder,
+        ];
+        $filtersHash = md5((string) json_encode($cachePayload));
+        $key = $this->getCacheKey("paginate_{$filtersHash}");
+
+        return Cache::remember($key, $this->ttl, function () use ($filters, $resolvedPerPage, $resolvedSort, $resolvedOrder) {
             $query = $this->newQuery();
             $this->applyFilters($query, $filters);
-            return $query->paginate($perPage);
+            $query->orderBy($resolvedSort, $resolvedOrder);
+            return $query->paginate($resolvedPerPage);
         });
     }
 

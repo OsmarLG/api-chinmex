@@ -39,7 +39,7 @@ class AuthController extends ApiController
     /**
      * Register
      *
-     * Registro de usuario con username, email y password.
+     * Registro de usuario con email y password. El username es opcional.
      * Devuelve el usuario creado y el token.
      *
      * @response AuthResource

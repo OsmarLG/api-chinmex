@@ -15,15 +15,16 @@ class RegisterAction
     }
 
     /**
-     * Register a new user using the pipeline and return user and token.
+     * Register a new user using the pipeline and return user and null token (no auto-login).
      *
-     * @param array{name:string,username:string,email:string,password:string} $data
-     * @return array{user: User, token: string}
+     * @param array{name:string,username?:string,email:string,password:string} $data
+     * @return array{user: User, token: string|null}
      */
     public function execute(array $data): array
     {
         $user = $this->pipeline->execute($data);
-        $token = $user->createToken('api-token')->plainTextToken;
+        // Do not auto-login on register; require email verification before login
+        $token = null;
 
         return [
             'user' => $user,

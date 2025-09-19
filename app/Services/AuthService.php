@@ -23,7 +23,7 @@ class AuthService extends BaseService
     /**
      * Register a new user and return [user, token]
      *
-     * @param array{name:string,username:string,email:string,password:string} $data
+     * @param array{name:string,username?:string,email:string,password:string} $data
      * @return array{user: \App\Models\User, token: string}
      */
     public function register(array $data): array

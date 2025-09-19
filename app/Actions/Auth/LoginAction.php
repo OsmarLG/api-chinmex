@@ -34,6 +34,11 @@ class LoginAction
             throw new \Exception('La cuenta ha sido deshabilitada', 403);
         }
 
+        // Block login if email not verified
+        if (is_null($user->email_verified_at)) {
+            throw new \Exception('Debes verificar tu correo electrónico antes de iniciar sesión.', 403);
+        }
+
         $token = $user->createToken('api-token')->plainTextToken;
 
         return [

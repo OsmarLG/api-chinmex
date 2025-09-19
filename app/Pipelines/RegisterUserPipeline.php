@@ -19,7 +19,7 @@ class RegisterUserPipeline
     /**
      * Execute the registration pipeline: create user, assign role 'user', send welcome mail.
      *
-     * @param array{name:string,username:string,email:string,password:string} $data
+     * @param array{name:string,username?:string,email:string,password:string} $data
      * @return User
      */
     public function execute(array $data): User
@@ -35,6 +35,11 @@ class RegisterUserPipeline
         // 3) Send welcome notification/email
         if (method_exists($user, 'notify')) {
             $user->notify(new WelcomeNotification());
+        }
+
+        // 4) Send email verification link
+        if (method_exists($user, 'sendEmailVerificationNotification')) {
+            $user->sendEmailVerificationNotification();
         }
 
         return $user;
