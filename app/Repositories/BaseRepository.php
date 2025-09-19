@@ -97,6 +97,53 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
+     * Find a model by ID including soft-deleted records.
+     */
+    public function findWithTrashed(int $id): ?Model
+    {
+        $modelClass = $this->getModelClass();
+        /** @var Model|null $model */
+        $model = $modelClass::withTrashed()->find($id);
+        return $model;
+    }
+
+    /**
+     * Restore a soft-deleted model by ID.
+     */
+    public function restore(int $id): bool
+    {
+        $model = $this->findWithTrashed($id);
+        if (!$model) {
+            return false;
+        }
+        // If not deleted, consider already restored
+        if (method_exists($model, 'trashed') && !$model->trashed()) {
+            return true;
+        }
+        $restored = method_exists($model, 'restore') ? (bool) $model->restore() : false;
+        if ($restored) {
+            $this->clearCache();
+        }
+        return $restored;
+    }
+
+    /**
+     * Permanently delete a model by ID.
+     */
+    public function forceDelete(int $id): bool
+    {
+        $model = $this->findWithTrashed($id);
+        if (!$model) {
+            return false;
+        }
+        $deleted = method_exists($model, 'forceDelete') ? (bool) $model->forceDelete() : false;
+        if ($deleted) {
+            $this->clearCache();
+        }
+        return $deleted;
+    }
+
+    /**
      * Paginate models using optional filters.
      *
      * Defaults to most recent (created_at DESC). Allows overriding per-page, sort column and order

@@ -51,4 +51,19 @@ interface BaseRepositoryInterface
      * @return LengthAwarePaginator
      */
     public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator;
+
+    /**
+     * Find a model by ID including soft-deleted records.
+     */
+    public function findWithTrashed(int $id): ?Model;
+
+    /**
+     * Restore a soft-deleted model by ID.
+     */
+    public function restore(int $id): bool;
+
+    /**
+     * Permanently delete a model by ID.
+     */
+    public function forceDelete(int $id): bool;
 }

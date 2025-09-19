@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\User\IndexUserRequest;
-use App\Http\Requests\User\ShowUserRequest;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Resources\UserResource;
@@ -20,6 +19,8 @@ class UserController extends ApiController
     public function __construct(UserService $userService)
     {
         $this->userService = $userService;
+        // Apply policy authorization to resource methods
+        $this->authorizeResource(User::class, 'user');
     }
 
     /**
@@ -100,5 +101,31 @@ class UserController extends ApiController
             $this->userService->deleteUser($user->id);
             return null;
         }, 'Usuario eliminado exitosamente');
+    }
+
+    /**
+     * Restore a soft-deleted user
+     *
+     * @response 200 {"status": true, "message": "Usuario restaurado exitosamente", "errors": [], "data": null}
+     */
+    public function restore(int $user): JsonResponse
+    {
+        return $this->handleRequest(function () use ($user) {
+            $this->userService->restoreUser($user);
+            return null;
+        }, 'Usuario restaurado exitosamente');
+    }
+
+    /**
+     * Permanently delete a user
+     *
+     * @response 200 {"status": true, "message": "Usuario eliminado permanentemente", "errors": [], "data": null}
+     */
+    public function forceDelete(int $user): JsonResponse
+    {
+        return $this->handleRequest(function () use ($user) {
+            $this->userService->forceDeleteUser($user);
+            return null;
+        }, 'Usuario eliminado permanentemente');
     }
 }

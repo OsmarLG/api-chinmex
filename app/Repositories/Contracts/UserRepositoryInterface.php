@@ -9,5 +9,18 @@ namespace App\Repositories\Contracts;
  */
 interface UserRepositoryInterface extends BaseRepositoryInterface
 {
-    // Inherit all methods from BaseRepositoryInterface.
+    /**
+     * Find a model by ID including soft-deleted.
+     */
+    public function findWithTrashed(int $id): ?\Illuminate\Database\Eloquent\Model;
+
+    /**
+     * Restore a soft-deleted model by ID.
+     */
+    public function restore(int $id): bool;
+
+    /**
+     * Permanently delete a model by ID.
+     */
+    public function forceDelete(int $id): bool;
 }

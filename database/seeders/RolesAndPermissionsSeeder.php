@@ -16,6 +16,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'users.create',
             'users.update',
             'users.delete',
+            'users.restore',
+            'users.force-delete',
         ];
 
         foreach ($permissions as $perm) {

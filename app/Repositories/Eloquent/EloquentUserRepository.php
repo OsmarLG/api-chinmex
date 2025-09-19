@@ -47,4 +47,46 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
             $query->where('created_at', '<=', $filters['created_to']);
         }
     }
+
+    /**
+     * Find a user including soft-deleted.
+     */
+    public function findWithTrashed(int $id): ?\Illuminate\Database\Eloquent\Model
+    {
+        return User::withTrashed()->find($id);
+    }
+
+    /**
+     * Restore a soft-deleted user by ID.
+     */
+    public function restore(int $id): bool
+    {
+        /** @var \App\Models\User|null $user */
+        $user = User::withTrashed()->find($id);
+        if (!$user) {
+            return false;
+        }
+        $restored = (bool) $user->restore();
+        if ($restored) {
+            $this->clearCache();
+        }
+        return $restored;
+    }
+
+    /**
+     * Permanently delete a user by ID.
+     */
+    public function forceDelete(int $id): bool
+    {
+        /** @var \App\Models\User|null $user */
+        $user = User::withTrashed()->find($id);
+        if (!$user) {
+            return false;
+        }
+        $deleted = (bool) $user->forceDelete();
+        if ($deleted) {
+            $this->clearCache();
+        }
+        return $deleted;
+    }
 }

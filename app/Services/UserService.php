@@ -7,6 +7,8 @@ use App\Actions\User\GetUserByIdAction;
 use App\Actions\User\CreateUserAction;
 use App\Actions\User\UpdateUserAction;
 use App\Actions\User\DeleteUserAction;
+use App\Actions\User\RestoreUserAction;
+use App\Actions\User\ForceDeleteUserAction;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -69,5 +71,21 @@ class UserService extends BaseService
     public function deleteUser(int $id): bool
     {
         return $this->callAction(DeleteUserAction::class, $id);
+    }
+
+    /**
+     * Restore a soft-deleted user
+     */
+    public function restoreUser(int $id): bool
+    {
+        return $this->callAction(RestoreUserAction::class, $id);
+    }
+
+    /**
+     * Permanently delete a user
+     */
+    public function forceDeleteUser(int $id): bool
+    {
+        return $this->callAction(ForceDeleteUserAction::class, $id);
     }
 }
