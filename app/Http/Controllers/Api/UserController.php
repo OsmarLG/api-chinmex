@@ -46,10 +46,10 @@ class UserController extends ApiController
      *
      * @response UserResource
      */
-    public function show(ShowUserRequest $request, int $id): JsonResponse
+    public function show(User $user): JsonResponse
     {
-        return $this->handleRequest(function () use ($id) {
-            $user = $this->userService->getUserById($id);
+        return $this->handleRequest(function () use ($user) {
+            $user = $this->userService->getUserById($user->id);
             return new UserResource($user);
         }, 'Usuario obtenido exitosamente');
     }
@@ -78,10 +78,10 @@ class UserController extends ApiController
      *
      * @response UserResource
      */
-    public function update(UpdateUserRequest $request, int $id): JsonResponse
+    public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
-        return $this->handleRequest(function () use ($request, $id) {
-            $user = $this->userService->updateUser($id, $request->validated());
+        return $this->handleRequest(function () use ($request, $user) {
+            $user = $this->userService->updateUser($user->id, $request->validated());
             return new UserResource($user);
         }, 'Usuario actualizado exitosamente');
     }

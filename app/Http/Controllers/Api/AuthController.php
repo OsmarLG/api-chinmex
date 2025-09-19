@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use App\Models\User;
+use App\Notifications\WelcomeNotification;
 
 class AuthController extends ApiController
 {
@@ -112,11 +113,16 @@ class AuthController extends ApiController
         $already = $user->hasVerifiedEmail();
         if (!$already) {
             $user->markEmailAsVerified();
+            // Send welcome notification after successful verification
+            if (method_exists($user, 'notify')) {
+                $user->notify(new WelcomeNotification());
+            }
         }
 
         $frontend = rtrim(config('app.frontend_url', env('FRONTEND_URL', env('APP_FRONTEND_URL', 'http://localhost:3000'))), '/');
         $status = $already ? 'already_verified' : 'verified';
-        $redirectUrl = $frontend . '/email/verify?status=' . $status . '&email=' . urlencode($user->email);
+        // Unify final redirect to frontend login so it can prefill email
+        $redirectUrl = $frontend . '/login?status=' . $status . '&email=' . urlencode($user->email);
 
         return redirect()->to($redirectUrl);
     }

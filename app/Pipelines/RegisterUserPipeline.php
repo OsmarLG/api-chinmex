@@ -4,7 +4,6 @@ namespace App\Pipelines;
 
 use App\Actions\User\CreateUserAction;
 use App\Models\User;
-use App\Notifications\WelcomeNotification;
 use Illuminate\Contracts\Pipeline\Pipeline as PipelineContract;
 
 class RegisterUserPipeline
@@ -28,19 +27,17 @@ class RegisterUserPipeline
         $user = $this->createUserAction->execute($data);
 
         // 2) Assign default role 'user' (spatie/laravel-permission)
-        // if (method_exists($user, 'assignRole')) {
+        if (method_exists($user, 'assignRole')) {
             $user->assignRole('user');
-        // }
+        }
 
         // 3) Send welcome notification/email
-        // if (method_exists($user, 'notify')) {
-            $user->notify(new WelcomeNotification());
-        // }
+        // Moved to email verification step (AuthController::verifyEmail)
 
         // 4) Send email verification link
-        // if (method_exists($user, 'sendEmailVerificationNotification')) {
+        if (method_exists($user, 'sendEmailVerificationNotification')) {
             $user->sendEmailVerificationNotification();
-        // }
+        }
 
         return $user;
     }

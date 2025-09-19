@@ -22,7 +22,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     {
-        $userId = request()->route('id');
+        $userId = request()->route('user');
 
         return [
             'name' => 'required|string|max:255',
