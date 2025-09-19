@@ -7,11 +7,11 @@ use App\Http\Requests\User\IndexUserRequest;
 use App\Http\Requests\User\ShowUserRequest;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
-use App\Http\Requests\User\DeleteUserRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserCollection;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
+use App\Models\User;
 
 class UserController extends ApiController
 {
@@ -94,10 +94,10 @@ class UserController extends ApiController
      *
      * @response 200 {"status": true, "message": "Usuario eliminado exitosamente", "errors": [], "data": null}
      */
-    public function destroy(DeleteUserRequest $request, int $id): JsonResponse
+    public function destroy(User $user): JsonResponse
     {
-        return $this->handleRequest(function () use ($id) {
-            $this->userService->deleteUser($id);
+        return $this->handleRequest(function () use ($user) {
+            $this->userService->deleteUser($user->id);
             return null;
         }, 'Usuario eliminado exitosamente');
     }

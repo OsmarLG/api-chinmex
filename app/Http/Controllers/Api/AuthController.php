@@ -10,6 +10,9 @@ use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Resources\AuthResource;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
+use App\Models\User;
 
 class AuthController extends ApiController
 {
@@ -78,5 +81,81 @@ class AuthController extends ApiController
         return $this->handleRequest(function () use ($request) {
             return $this->authService->resetPassword($request->validated());
         }, 'Contraseña restablecida correctamente');
+    }
+
+    /**
+     * Verify Email (via signed URL)
+     *
+     * Redirige al frontend después de verificar: FRONTEND_URL/email/verify?status=verified|already_verified
+     * No requiere estar autenticado; valida la firma y el hash del email.
+     */
+    public function verifyEmail(Request $request, int $id, string $hash)
+    {
+        // Validate signed URL
+        if (!URL::hasValidSignature($request)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Enlace de verificación inválido o expirado.',
+            ], 403);
+        }
+
+        $user = User::findOrFail($id);
+
+        // Validate the hash matches the user's email
+        if (! hash_equals($hash, sha1($user->getEmailForVerification()))) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Hash de verificación inválido.',
+            ], 403);
+        }
+
+        $already = $user->hasVerifiedEmail();
+        if (!$already) {
+            $user->markEmailAsVerified();
+        }
+
+        $frontend = rtrim(config('app.frontend_url', env('FRONTEND_URL', env('APP_FRONTEND_URL', 'http://localhost:3000'))), '/');
+        $status = $already ? 'already_verified' : 'verified';
+        $redirectUrl = $frontend . '/email/verify?status=' . $status . '&email=' . urlencode($user->email);
+
+        return redirect()->to($redirectUrl);
+    }
+
+    /**
+     * Resend verification email.
+     *
+     * Body: { email: string }
+     */
+    public function resendVerification(Request $request): JsonResponse
+    {
+        return $this->handleRequest(function () use ($request) {
+            $request->validate([
+                'email' => 'required|email',
+            ]);
+
+            /** @var User|null $user */
+            $user = User::where('email', $request->input('email'))->first();
+
+            if (!$user) {
+                return [
+                    'status' => true,
+                    'message' => 'Si el correo existe, se enviará un enlace de verificación.',
+                ];
+            }
+
+            if ($user->hasVerifiedEmail()) {
+                return [
+                    'status' => true,
+                    'message' => 'El correo ya está verificado.',
+                ];
+            }
+
+            $user->sendEmailVerificationNotification();
+
+            return [
+                'status' => true,
+                'message' => 'Se envió el enlace de verificación a tu correo.',
+            ];
+        });
     }
 }
