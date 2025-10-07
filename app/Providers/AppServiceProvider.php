@@ -23,6 +23,21 @@ class AppServiceProvider extends ServiceProvider
             \App\Repositories\Contracts\UserRepositoryInterface::class,
             \App\Repositories\Eloquent\EloquentUserRepository::class
         );
+
+        $this->app->bind(
+            \App\Repositories\Contracts\CountryRepositoryInterface::class,
+            \App\Repositories\Eloquent\EloquentCountryRepository::class
+        );
+
+        $this->app->bind(
+            \App\Repositories\Contracts\StateRepositoryInterface::class,
+            \App\Repositories\Eloquent\EloquentStateRepository::class
+        );
+
+        $this->app->bind(
+            \App\Repositories\Contracts\UserAddressRepositoryInterface::class,
+            \App\Repositories\Eloquent\EloquentUserAddressRepository::class
+        );
     }
 
     /**
