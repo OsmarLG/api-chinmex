@@ -29,6 +29,8 @@ class IndexUserRequest extends FormRequest
             'created_to' => 'sometimes|date|after_or_equal:created_from',
             'per_page' => 'sometimes|integer|min:1|max:100',
             'page' => 'sometimes|integer|min:1',
+            'sort' => 'sometimes|string',
+            'order' => 'sometimes|string|in:asc,desc',
         ];
     }
 
@@ -55,6 +57,9 @@ class IndexUserRequest extends FormRequest
             'per_page.max' => 'No se pueden mostrar más de 100 elementos por página.',
             'page.integer' => 'La página debe ser un número entero.',
             'page.min' => 'La página debe ser mayor a 0.',
+            'sort.string' => 'El orden debe ser una cadena de texto.',
+            'order.string' => 'El orden debe ser una cadena de texto.',
+            'order.in' => 'El orden debe ser "asc" o "desc".',
         ];
     }
 }
