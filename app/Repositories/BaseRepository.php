@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Class BaseRepository
@@ -185,6 +186,18 @@ abstract class BaseRepository implements BaseRepositoryInterface
             $query->orderBy($resolvedSort, $resolvedOrder);
             return $query->paginate($resolvedPerPage);
         });
+    }
+
+    /**
+     * Get models using optional filters without pagination.
+     *
+     * @param array $filters
+     */
+    public function all(array $filters = []) : Collection
+    {
+        $query = $this->newQuery();
+        $this->applyFilters($query, $filters);
+        return $query->get();
     }
 
     /**

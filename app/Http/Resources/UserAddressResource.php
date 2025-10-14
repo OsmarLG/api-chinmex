@@ -17,7 +17,7 @@ class UserAddressResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'user' => $this->user,
+            'user' => $this->whenLoaded('user'),
             'address_line_1' => $this->address_line_1,
             'address_line_2' => $this->address_line_2,
             'city' => $this->city,

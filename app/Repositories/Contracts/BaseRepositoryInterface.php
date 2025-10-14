@@ -3,6 +3,7 @@
 namespace App\Repositories\Contracts;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
@@ -51,6 +52,14 @@ interface BaseRepositoryInterface
      * @return LengthAwarePaginator
      */
     public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator;
+
+    /**
+     * Paginate models using optional filters without pagination.
+     *
+     * @param array $filters
+     * @return Collection
+     */
+    public function all(array $filters = []) : Collection;
 
     /**
      * Find a model by ID including soft-deleted records.

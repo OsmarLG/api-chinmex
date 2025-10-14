@@ -12,6 +12,7 @@ Route::prefix('profile')->group(function () {
 
         // User Addresses
         Route::get('addresses', [ProfileController::class, 'getAddresses']);
+        Route::get('addresses-without-pagination', [ProfileController::class, 'getAddressesWithoutPagination'])->name('profile.addresses-without-pagination');;
         Route::post('addresses', [ProfileController::class, 'createAddress']);
         Route::put('addresses/{addressId}', [ProfileController::class, 'updateAddress']);
         Route::delete('addresses/{addressId}', [ProfileController::class, 'deleteAddress']);

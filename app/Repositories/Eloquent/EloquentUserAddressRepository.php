@@ -6,6 +6,7 @@ use App\Models\UserAddress;
 use App\Repositories\BaseRepository;
 use App\Repositories\Contracts\UserAddressRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class EloquentUserAddressRepository extends BaseRepository implements UserAddressRepositoryInterface
 {
@@ -46,5 +47,25 @@ class EloquentUserAddressRepository extends BaseRepository implements UserAddres
         if (isset($filters['is_default'])) {
             $query->where('is_default', $filters['is_default']);
         }
+    }
+
+    /**
+     * Get models using optional filters without pagination.
+     *
+     * @param array $filters
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function all(array $filters = []) : Collection
+    {
+        $query = $this->newQuery();
+
+        // Aplica filtros genéricos si existen
+        $this->applyFilters($query, $filters);
+
+        // 👇 Aquí puedes decidir qué relaciones cargar
+        // Ejemplo: excluir "user" para esta versión sin paginación
+        $query->with(['state', 'country']); // sin 'user'
+
+        return $query->get();
     }
 }

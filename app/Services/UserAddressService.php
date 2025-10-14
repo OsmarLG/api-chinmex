@@ -3,12 +3,14 @@
 namespace App\Services;
 
 use App\Actions\UserAddress\GetAllUserAddressesAction;
+use App\Actions\UserAddress\GetAllUserAddressesWithoutPaginationAction;
 use App\Actions\UserAddress\GetUserAddressByIdAction;
 use App\Actions\UserAddress\CreateUserAddressAction;
 use App\Actions\UserAddress\UpdateUserAddressAction;
 use App\Actions\UserAddress\DeleteUserAddressAction;
 use App\Models\UserAddress;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class UserAddressService extends BaseService
 {
@@ -21,6 +23,17 @@ class UserAddressService extends BaseService
     public function getAllUserAddresses(array $filters = []): LengthAwarePaginator
     {
         return $this->callAction(GetAllUserAddressesAction::class, $filters);
+    }
+
+    /**
+     * Get all user addresses without pagination
+     *
+     * @param array $filters
+     * @return Collection
+     */
+    public function getAllUserAddressesWithoutPagination(array $filters = []): Collection
+    {
+        return $this->callAction(GetAllUserAddressesWithoutPaginationAction::class, $filters);
     }
 
     /**

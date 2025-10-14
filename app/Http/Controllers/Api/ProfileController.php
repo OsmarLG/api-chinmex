@@ -40,7 +40,7 @@ class ProfileController extends ApiController
         }, 'Perfil obtenido exitosamente');
     }
 
-     /**
+    /**
      * Update Profile
      *
      * Actualiza el perfil del usuario autenticado.
@@ -101,6 +101,22 @@ class ProfileController extends ApiController
             $user = auth()->user();
             $addresses = $this->userAddressService->getAllUserAddresses(['user_id' => $user->id]);
             return new UserAddressCollection($addresses);
+        }, 'Direcciones obtenidas exitosamente');
+    }
+
+    /**
+     * Get User Addresses Without Pagination
+     *
+     * Obtiene las direcciones del usuario autenticado sin paginación.
+     *
+     * @response UserAddressResource
+     */
+    public function getAddressesWithoutPagination(): JsonResponse
+    {
+        return $this->handleRequest(function () {
+            $user = auth()->user();
+            $addresses = $this->userAddressService->getAllUserAddressesWithoutPagination(['user_id' => $user->id]);
+            return UserAddressResource::collection($addresses)->additional(['include_user' => false]);
         }, 'Direcciones obtenidas exitosamente');
     }
 
